@@ -1,31 +1,24 @@
-package com.example.assignment.view;
+package com.example.assignment.adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.paging.PagedListAdapter;
-import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.DiffUtil.ItemCallback;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.assignment.R;
-import com.example.assignment.model.User;
+import com.example.assignment.ItemClickListener;
+import com.example.assignment.models.User;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -34,7 +27,6 @@ public class UserListAdapter extends PagedListAdapter<User,UserListAdapter.MyVie
     private ArrayList<User> userList;
     ItemClickListener itemClickListener;
     static String id;
-
 
     public static ItemCallback<User> DIFF__CALLBACK = new ItemCallback<User>() {
         @Override
@@ -53,8 +45,6 @@ public class UserListAdapter extends PagedListAdapter<User,UserListAdapter.MyVie
         this.itemClickListener = itemClickListener;
     }
 
-
-
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -70,10 +60,13 @@ public class UserListAdapter extends PagedListAdapter<User,UserListAdapter.MyVie
         }
         Log.d("image r",String.valueOf(user.getImage()));
         Log.d("image o",String.valueOf(R.drawable.ic_baseline_person_24));
-        holder.userImage.setImageURI(Uri.parse(user.getImage()));
+
+        if (user.getImage() == null || user.getImage().equalsIgnoreCase(""))
+            holder.userImage.setImageResource(R.drawable.ic_baseline_person_24);
+        else
+            holder.userImage.setImageURI(Uri.parse(user.getImage()));
 
     }
-
 
     class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
@@ -90,34 +83,6 @@ public class UserListAdapter extends PagedListAdapter<User,UserListAdapter.MyVie
 
             itemView.setOnLongClickListener(this);
            Context item_view_context=itemView.getContext();
-
-          /* itemView.setOnLongClickListener(new View.OnLongClickListener() {
-               @Override
-               public boolean onLongClick(View v) {
-                   checkbox.setVisibility(View.VISIBLE);
-
-
-                   return true;
-               }
-           });*/
-
-           /* itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int clickPosition = getAdapterPosition();
-                    User user = userList.get(clickPosition);
-                    Intent intent =new Intent(item_view_context,DetailActivity.class);
-
-                     id =String.valueOf(user.getId());
-
-                    intent.putExtra("ID",id);
-                    // Log.d("abc",id);
-                    item_view_context.startActivity(intent);
-
-                }
-            });*/
-
-
         }
 
         @Override

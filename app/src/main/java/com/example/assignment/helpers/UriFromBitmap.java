@@ -1,4 +1,4 @@
-package com.example.assignment.helper;
+package com.example.assignment.helpers;
 
 import android.content.Context;
 import android.graphics.Bitmap;

@@ -1,4 +1,4 @@
-package com.example.assignment.view;
+package com.example.assignment.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,37 +18,32 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.assignment.R;
-import com.example.assignment.viewmodel.Tab1ViewModel;
+import com.example.assignment.viewmodel.CreateEntryViewModel;
 
-public class DetailActivity extends AppCompatActivity {
-    Tab1ViewModel viewModel;
+public class DetailsOfUserActivity extends AppCompatActivity {
+    CreateEntryViewModel viewModel;
     Toolbar toolbar;
-
     String id;
-
     ImageView imageView;
     TextView textViewName, textViewPhone, textViewBirthday;
-     EditText editTextViewName, editTextViewPhone, editTextViewBirthday;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail);
+        setContentView(R.layout.activity_detail_of_user);
         init();
     }
 
     private void init() {
-        imageView=findViewById(R.id.image_view_user);
-        textViewName =findViewById(R.id.textPersonName);
-        textViewBirthday=findViewById(R.id.textBirthDate);
-        textViewPhone=findViewById(R.id.textPhone);
+        imageView = findViewById(R.id.image_view_user);
+        textViewName = findViewById(R.id.textPersonName);
+        textViewBirthday = findViewById(R.id.textBirthDate);
+        textViewPhone = findViewById(R.id.textPhone);
 
 
+        viewModel = ViewModelProviders.of(this).get(CreateEntryViewModel.class);
 
-
-        viewModel= ViewModelProviders.of(this).get(Tab1ViewModel.class);
-
-        toolbar=findViewById(R.id.tool_bar);
+        toolbar = findViewById(R.id.tool_bar);
         toolbar.setTitle("User Details");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -60,22 +55,22 @@ public class DetailActivity extends AppCompatActivity {
         });
 
 
-
-        id=getIntent().getStringExtra("ID");
+        id = getIntent().getStringExtra("ID");
         viewModel.fetchDetailsFromDatabase(Integer.parseInt(id));
-        viewModel.getUser().observe(this,user -> {
+        viewModel.getUser().observe(this, user -> {
             imageView.setImageURI(Uri.parse(user.getImage()));
-            textViewName.setText("Name: "+user.getName());
-            textViewPhone.setText("Mobile: "+user.getPhoneNumber());
-            textViewBirthday.setText("BirthDate: "+user.getBirthday());
+            textViewName.setText("Name: " + user.getName());
+            textViewPhone.setText("Mobile: " + user.getPhoneNumber());
+            textViewBirthday.setText("BirthDate: " + user.getBirthday());
         });
 
 
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater =getMenuInflater();
-        inflater.inflate(R.menu.menu_delete_edit,menu);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_delete_edit, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -83,29 +78,22 @@ public class DetailActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         Intent intent;
 
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.delete:
 
                 viewModel.deleteUserFromDatabase(Integer.parseInt(id));
                 finish();
-                 intent =new Intent(this,MainActivity.class);
+                intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
 
                 Toast.makeText(this, "Delete Clicked", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.edit:
-               /* textViewBirthday.setVisibility(View.GONE);
-                textViewName.setVisibility(View.GONE);
-                textViewPhone.setVisibility(View.GONE);
-                editTextViewBirthday.setVisibility(View.VISIBLE);
-                editTextViewPhone.setVisibility(View.VISIBLE);
-                editTextViewBirthday.setVisibility(View.VISIBLE);*/
+                intent = new Intent(this, EditUserDetailActivity.class);
 
-                  intent =new Intent(this,EditActivity.class);
+                id = getIntent().getStringExtra("ID");
 
-                id=getIntent().getStringExtra("ID");
-
-                intent.putExtra("ID",id);
+                intent.putExtra("ID", id);
                 // Log.d("abc",id);
                 startActivity(intent);
                 Toast.makeText(this, "Edit Clicked", Toast.LENGTH_SHORT).show();

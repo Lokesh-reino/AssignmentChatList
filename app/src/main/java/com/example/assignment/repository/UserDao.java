@@ -1,12 +1,11 @@
-package com.example.assignment.model;
+package com.example.assignment.repository;
 
-import androidx.lifecycle.LiveData;
 import androidx.paging.DataSource;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
 
-import java.util.List;
+import com.example.assignment.models.User;
 
 import io.reactivex.Completable;
 import io.reactivex.Single;

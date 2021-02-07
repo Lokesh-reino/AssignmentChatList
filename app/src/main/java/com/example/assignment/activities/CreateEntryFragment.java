@@ -1,26 +1,22 @@
-package com.example.assignment.view;
+package com.example.assignment.activities;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
 
 import android.provider.MediaStore;
@@ -32,31 +28,31 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
+//import android.widget.Toolbar;
 
 import com.example.assignment.R;
-import com.example.assignment.helper.UriFromBitmap;
-import com.example.assignment.model.User;
-import com.example.assignment.viewmodel.Tab1ViewModel;
-import com.example.assignment.viewmodel.Tab2ViewModel;
+import com.example.assignment.adapters.MyFragmentAdapter;
+import com.example.assignment.helpers.UriFromBitmap;
+import com.example.assignment.models.User;
+import com.example.assignment.viewmodel.CreateEntryViewModel;
 
-import java.io.IOException;
 import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.app.Activity.RESULT_CANCELED;
 
-public class Tab2 extends Fragment {
+public class CreateEntryFragment extends Fragment {
     MyFragmentAdapter myFragmentAdapter;
-    private Tab1ViewModel mViewModel;
+    private CreateEntryViewModel mViewModel;
     @BindView(R.id.image_view_user)
     ImageView userImage;
 
-    @BindView(R.id.editTextDate)
-    TextView userBirthDay;
+    @BindView(R.id.editTextDOB)
+    EditText userBirthDay;
 
     @BindView(R.id.editTextPersonName)
     EditText userName;
@@ -64,12 +60,12 @@ public class Tab2 extends Fragment {
     @BindView(R.id.editTextPhone)
     EditText userPhoneNumber;
 
-    @BindView(R.id.button)
+    @BindView(R.id.button_save)
     Button button;
-    @BindView(R.id.date_picker)
-    TextView datePick;
-    @BindView(R.id.buttonAddProfilePic)
-    Button addProfilePic;
+    //    @BindView(R.id.date_picker)
+//    TextView datePick;
+    @BindView(R.id.ivAddProfilePic)
+    CircleImageView addProfilePic;
 
     String ProfilePicPath;
     String ProfilePicUri;
@@ -78,20 +74,19 @@ public class Tab2 extends Fragment {
     private final int REQUEST_CODE_GALLERY = 1;
     UriFromBitmap uriFromBitmap;
 
-    public static Tab2 newInstance() {
-        return new Tab2();
+    public static CreateEntryFragment newInstance() {
+        return new CreateEntryFragment();
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.tab2_fragment, container, false);
+        View view = inflater.inflate(R.layout.activity_create_entry_layout, container, false);
         ButterKnife.bind(this, view);
-         uriFromBitmap =new UriFromBitmap();
+        uriFromBitmap = new UriFromBitmap();
 
 
-        //EditText userName=view.findViewById(R.id.name_user);
-        datePick.setOnClickListener(new View.OnClickListener() {
+        userBirthDay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
@@ -160,6 +155,7 @@ public class Tab2 extends Fragment {
         });
         builder.show();
     }
+
     private void checkPermissionAndOpenGallery() {
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
                 PackageManager.PERMISSION_GRANTED ||
@@ -216,7 +212,7 @@ public class Tab2 extends Fragment {
                     try {
                         Log.d("TAG", "Inside try of onActivity result of Tab2Fragment");
 
-                        cameraImageUri = uriFromBitmap.getImageUri(getContext(),bitmapCameraImage);
+                        cameraImageUri = uriFromBitmap.getImageUri(getContext(), bitmapCameraImage);
                         Log.d("TAG", "cameraUri: " + cameraImageUri.toString());
                         Log.d("TAG", "cameraUri: " + cameraImageUri.getPath());
 
@@ -226,14 +222,14 @@ public class Tab2 extends Fragment {
                     }
                     userImage.setImageURI(cameraImageUri);
                     ProfilePicPath = cameraImageUri.getPath();
-                    ProfilePicUri=cameraImageUri.toString();
+                    ProfilePicUri = cameraImageUri.toString();
                     break;
 
                 case REQUEST_CODE_GALLERY:
                     Uri selectedImageUri = data.getData();
                     Log.d("TAG", "URi: " + selectedImageUri.getPath());
                     ProfilePicPath = selectedImageUri.getPath();
-                    ProfilePicUri=selectedImageUri.toString();
+                    ProfilePicUri = selectedImageUri.toString();
                     userImage.setImageURI(selectedImageUri);
                     break;
             }
@@ -257,6 +253,6 @@ public class Tab2 extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mViewModel = new ViewModelProvider(getActivity()).get(Tab1ViewModel.class);
+        mViewModel = new ViewModelProvider(getActivity()).get(CreateEntryViewModel.class);
     }
 }

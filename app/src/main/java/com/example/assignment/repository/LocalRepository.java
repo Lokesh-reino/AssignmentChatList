@@ -2,14 +2,9 @@ package com.example.assignment.repository;
 
 import android.content.Context;
 
-import androidx.lifecycle.LiveData;
 import androidx.paging.DataSource;
 
-import com.example.assignment.model.User;
-import com.example.assignment.model.UserDao;
-import com.example.assignment.model.UserDatabase;
-
-import java.util.List;
+import com.example.assignment.models.User;
 
 import io.reactivex.Completable;
 import io.reactivex.Single;

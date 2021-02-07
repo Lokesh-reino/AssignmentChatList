@@ -1,8 +1,8 @@
-package com.example.assignment.view;
+package com.example.assignment;
 
 import android.view.View;
 
-import com.example.assignment.model.User;
+import com.example.assignment.models.User;
 
 public interface ItemClickListener {
     void onItemClicked(View view, User user);

@@ -1,8 +1,7 @@
-package com.example.assignment.model;
+package com.example.assignment.models;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
-import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import java.util.Objects;

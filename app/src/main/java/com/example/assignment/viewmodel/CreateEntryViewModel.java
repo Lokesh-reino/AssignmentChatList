@@ -1,24 +1,18 @@
 package com.example.assignment.viewmodel;
 
 import android.app.Application;
-import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 
-import com.example.assignment.model.User;
-import com.example.assignment.model.UserDao;
-import com.example.assignment.model.UserDatabase;
+import com.example.assignment.models.User;
 import com.example.assignment.repository.LocalRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.CompletableObserver;
@@ -27,9 +21,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subjects.PublishSubject;
 
-public class Tab1ViewModel extends AndroidViewModel {
+public class CreateEntryViewModel extends AndroidViewModel {
 
 
     public LiveData<PagedList<User>> userList ;
@@ -48,7 +41,7 @@ public class Tab1ViewModel extends AndroidViewModel {
 
     private CompositeDisposable disposable = new CompositeDisposable();
 
-    public Tab1ViewModel(@NonNull Application application) {
+    public CreateEntryViewModel(@NonNull Application application) {
         super(application);
     }
     
