@@ -207,7 +207,7 @@ public class ViewUsersInRecyclerFragment extends Fragment implements  EditAndDel
 
     }
 
-    @Override
+   /* @Override
     public void onItemClicked(View view, User user) {
         Log.d("TAG", String.valueOf(multiSelectStatus));
         if (multiSelectStatus) {
@@ -235,7 +235,7 @@ public class ViewUsersInRecyclerFragment extends Fragment implements  EditAndDel
         Log.d("TAG", "LongItemClick: " + index);
         createEntryViewModel.setIsMultiSelect(true);
 
-    }
+    }*/
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -281,4 +281,16 @@ public class ViewUsersInRecyclerFragment extends Fragment implements  EditAndDel
         addUserForEditDelete();
         createEntryViewModel.deleteUserFromDatabase(userList.get(clickPosition).getId());
     }
+
+    @Override
+    public void onItemClicked(View view, int position) {
+
+    }
+
+    @Override
+    public void onItemLongClicked(View v, int position, int adapterPosition) {
+
+    }
+
+
 }

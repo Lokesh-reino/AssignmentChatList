@@ -7,7 +7,7 @@ import com.example.assignment.models.User;
 public interface EditAndDeleteInterface {
     public void edit(int clickPosition);
     public void delete(int clickPosition);
-    void onItemClicked(View view, User user);
+    void onItemClicked(View view, int position);
 
-    void onItemLongClicked(View view, User user, int index);
+    void onItemLongClicked(View v, int position, int adapterPosition);
 }

@@ -29,7 +29,6 @@ import io.reactivex.schedulers.Schedulers;
 
 public class CreateEntryViewModel extends AndroidViewModel {
 
-
     public LiveData<PagedList<User>> userList;
     public MutableLiveData<List<User>> users = new MutableLiveData<>();
     public MutableLiveData<User> user = new MutableLiveData<>();

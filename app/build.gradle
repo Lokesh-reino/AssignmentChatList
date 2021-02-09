@@ -86,4 +86,7 @@ dependencies {
 
     //swipe delete
     implementation 'com.chauthai.swipereveallayout:swipe-reveal-layout:1.4.1'
+
+    //fetch contacts from native contacts
+    implementation 'com.github.mirrajabi:rx-contacts2:1.2.0'
 }
