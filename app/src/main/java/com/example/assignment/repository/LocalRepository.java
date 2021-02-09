@@ -35,8 +35,8 @@ public class LocalRepository {
         return userDao.deleteUser(id);
     }
 
-    public Completable updateUserById(String u_name, String u_bday, String u_phonenumber, int Id) {
-        return userDao.updateUserById(u_name, u_bday, u_phonenumber, Id);
+    public Completable updateUserById(String u_name, String u_bday, String u_phonenumber, int Id, long time_now) {
+        return userDao.updateUserById(u_name, u_bday, u_phonenumber, Id,time_now);
     }
 
     public Single<User> getUserById(int id) {
@@ -54,5 +54,10 @@ public class LocalRepository {
     public DataSource.Factory<Integer, User> getAllUser() {
         return userDao.getAllUser();
     }
+
+    public DataSource.Factory<Integer, User> getAllUserbyDateCreated() {
+        return userDao.getAllUserbyDateCreated();
+    }
+
 
 }

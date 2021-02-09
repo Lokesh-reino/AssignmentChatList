@@ -65,7 +65,7 @@ public class CreateEntryViewModel extends AndroidViewModel {
                 .setPageSize(10)
                 .build();
 
-        userList = new LivePagedListBuilder<>(repository.getAllUsers(), config).build();
+        userList = new LivePagedListBuilder<>(repository.getAllUserbyDateCreated(), config).build();
 
     }
 
@@ -164,7 +164,7 @@ public class CreateEntryViewModel extends AndroidViewModel {
     }
 
     public void updateUser(String u_name, String u_bday, String u_phonenumber, int Id) {
-        repository.updateUserById(u_name, u_bday, u_phonenumber, Id).subscribeOn(Schedulers.io())
+        repository.updateUserById(u_name, u_bday, u_phonenumber, Id, System.currentTimeMillis()).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {
                     @Override

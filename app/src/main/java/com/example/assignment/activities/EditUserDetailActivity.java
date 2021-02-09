@@ -80,7 +80,7 @@ public class EditUserDetailActivity extends AppCompatActivity {
                     String name = editTextName.getText().toString();
                     String phoneNumber = editTextPhone.getText().toString();
                     String birthday = editTextBirthday.getText().toString();
-                    User user = new User(name, phoneNumber, birthday, "uri");
+                    User user = new User(name, phoneNumber, birthday, "uri",System.currentTimeMillis(),System.currentTimeMillis());
                     viewModel.updateUser(name, birthday, phoneNumber, Integer.parseInt(id));
                     Toast.makeText(EditUserDetailActivity.this, "Successfully Edited", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(EditUserDetailActivity.this, MainActivity.class);
