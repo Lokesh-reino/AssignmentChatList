@@ -3,11 +3,7 @@ package com.example.assignment.models;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
-import androidx.room.TypeConverters;
 
-import com.example.assignment.converters.DateTypeConverters;
-
-import java.util.Date;
 import java.util.Objects;
 
 @Entity
@@ -22,45 +18,12 @@ public class User {
     private String  phoneNumber;
     @ColumnInfo
     private String birthday;
-    @TypeConverters({DateTypeConverters.class})
-    private Long datecreated;
 
-    @ColumnInfo(name = "created_at")
-    private long createdAt;
-    @ColumnInfo(name = "modified_at")
-    private long modifiedAt;
-
-    public long getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(long createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public long getModifiedAt() {
-        return modifiedAt;
-    }
-
-    public void setModifiedAt(long modifiedAt) {
-        this.modifiedAt = modifiedAt;
-    }
-
-    public Long getDatecreated() {
-        return datecreated;
-    }
-
-    public void setDatecreated(Long datecreated) {
-        this.datecreated = datecreated;
-    }
-
-    public User(String name, String image, String phoneNumber, String birthday, long createdAt, long modifiedAt) {
+    public User(String name, String phoneNumber, String birthday,String image) {
         this.name = name;
-        this.image = image;
         this.phoneNumber = phoneNumber;
         this.birthday = birthday;
-        this.createdAt = createdAt;
-        this.modifiedAt = modifiedAt;
+        this.image=image;
     }
 
     public int getId() {

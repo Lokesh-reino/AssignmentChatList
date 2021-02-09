@@ -16,7 +16,6 @@ import android.view.View;
 import com.example.assignment.R;
 import com.example.assignment.adapters.MyFragmentAdapter;
 import com.example.assignment.viewmodel.CreateEntryViewModel;
-
 import com.google.android.material.tabs.TabLayout;
 
 public class MainActivity extends AppCompatActivity {

@@ -65,7 +65,7 @@ public class CreateEntryViewModel extends AndroidViewModel {
                 .setPageSize(10)
                 .build();
 
-        userList = new LivePagedListBuilder<>(repository.getAllUserbyDateCreated(), config).build();
+        userList = new LivePagedListBuilder<>(repository.getAllUsers(), config).build();
 
     }
 
@@ -140,31 +140,8 @@ public class CreateEntryViewModel extends AndroidViewModel {
 
     }
 
-    public void undoDeleteInDatabase(User user, int id) {
-        repository.undoDeleteInDatabase(user,id).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new CompletableObserver() {
-                    @Override
-                    public void onSubscribe(@io.reactivex.annotations.NonNull Disposable d) {
-                        Log.d("TAG", "Inside onSubscribe of deleteUser in ViewModel");
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        Log.d("TAG", "Inside onComplete of deleteUser in ViewModel");
-                    }
-
-                    @Override
-                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
-                        Log.d("TAG", "Inside onError of deleteUser in ViewModel");
-                        e.printStackTrace();
-                    }
-                });
-
-    }
-
     public void updateUser(String u_name, String u_bday, String u_phonenumber, int Id) {
-        repository.updateUserById(u_name, u_bday, u_phonenumber, Id, System.currentTimeMillis()).subscribeOn(Schedulers.io())
+        repository.updateUserById(u_name, u_bday, u_phonenumber, Id).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {
                     @Override

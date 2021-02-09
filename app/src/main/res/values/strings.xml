@@ -4,5 +4,4 @@
     <string name="hint_contact_name">Enter Your Contact Number</string>
     <string name="hint_select_birthday">Enter Your DOB</string>
     <string name="save">SAVE</string>
-    <string name="delete">DELETE</string>
 </resources>

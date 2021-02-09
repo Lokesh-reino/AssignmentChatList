@@ -115,10 +115,11 @@ public class CreateEntryFragment extends Fragment {
                 String phoneNumber = userPhoneNumber.getText().toString();
                 String birthday = userBirthDay.getText().toString();
 
-                User user = new User(name, phoneNumber, birthday, ProfilePicUri,System.currentTimeMillis(),System.currentTimeMillis());
+                User user = new User(name, phoneNumber, birthday, ProfilePicUri);
                 mViewModel.saveToDatabase(user);
                 Toast.makeText(getActivity(), "Successfully Resisted", Toast.LENGTH_SHORT).show();
                 clearFields();
+
                 changeTab();
             }
         });
