@@ -14,6 +14,7 @@ import androidx.paging.PagedListAdapter;
 import androidx.recyclerview.widget.DiffUtil.ItemCallback;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.chauthai.swipereveallayout.SwipeRevealLayout;
 import com.example.assignment.R;
 import com.example.assignment.ItemClickListener;
 import com.example.assignment.models.User;
@@ -24,7 +25,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class UserListAdapter extends PagedListAdapter<User,UserListAdapter.MyViewHolder>  {
-    private ArrayList<User> userList;
     ItemClickListener itemClickListener;
     static String id;
 
@@ -65,10 +65,10 @@ public class UserListAdapter extends PagedListAdapter<User,UserListAdapter.MyVie
             holder.userImage.setImageResource(R.drawable.ic_baseline_person_24);
         else
             holder.userImage.setImageURI(Uri.parse(user.getImage()));
-
     }
 
-    class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
+
+    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
         @BindView(R.id.name_user)
         TextView userName;

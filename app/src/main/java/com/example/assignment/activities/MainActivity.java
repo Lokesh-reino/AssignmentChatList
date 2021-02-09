@@ -3,6 +3,7 @@ package com.example.assignment.activities;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuItemCompat;
+import androidx.lifecycle.Observer;
 import androidx.viewpager.widget.ViewPager;
 
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.view.View;
 import com.example.assignment.R;
 import com.example.assignment.adapters.MyFragmentAdapter;
 import com.example.assignment.viewmodel.CreateEntryViewModel;
+
 import com.google.android.material.tabs.TabLayout;
 
 public class MainActivity extends AppCompatActivity {
@@ -32,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init() {
-
 
         toolbar = findViewById(R.id.tool_bar);
         toolbar.setTitle("User Info");
@@ -57,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
 
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_search, menu);
+        setMenu(menu);
+
         MenuItem searchViewItem = menu.findItem(R.id.app_bar_search);
         final android.widget.SearchView searchView = (android.widget.SearchView) MenuItemCompat.getActionView(searchViewItem);
 
@@ -80,6 +83,20 @@ public class MainActivity extends AppCompatActivity {
         });
 
         return super.onCreateOptionsMenu(menu);
+    }
+    private void setMenu(Menu menu) {
+        CreateEntryViewModel.getIsMultiSelectOn().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (aBoolean) {
+                    menu.findItem(R.id.multi_select_delete_menu).setVisible(true);
+                    menu.findItem(R.id.app_bar_search).setVisible(false);
+                } else {
+                    menu.findItem(R.id.multi_select_delete_menu).setVisible(false);
+                    menu.findItem(R.id.app_bar_search).setVisible(true);
+                }
+            }
+        });
     }
 
 }

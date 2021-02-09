@@ -17,6 +17,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.paging.LivePagedListBuilder;
+import androidx.paging.PagedList;
 import androidx.viewpager.widget.ViewPager;
 
 import android.provider.MediaStore;
@@ -35,6 +37,7 @@ import com.example.assignment.R;
 import com.example.assignment.adapters.MyFragmentAdapter;
 import com.example.assignment.helpers.UriFromBitmap;
 import com.example.assignment.models.User;
+import com.example.assignment.repository.LocalRepository;
 import com.example.assignment.viewmodel.CreateEntryViewModel;
 
 import java.util.Calendar;
@@ -46,7 +49,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import static android.app.Activity.RESULT_CANCELED;
 
 public class CreateEntryFragment extends Fragment {
-    MyFragmentAdapter myFragmentAdapter;
+
     private CreateEntryViewModel mViewModel;
     @BindView(R.id.image_view_user)
     ImageView userImage;
@@ -255,4 +258,5 @@ public class CreateEntryFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         mViewModel = new ViewModelProvider(getActivity()).get(CreateEntryViewModel.class);
     }
+
 }

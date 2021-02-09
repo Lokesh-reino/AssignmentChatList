@@ -1,12 +1,15 @@
 package com.example.assignment.activities;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -29,6 +32,9 @@ import com.example.assignment.R;
 import com.example.assignment.adapters.UserListAdapter;
 import com.example.assignment.models.User;
 import com.example.assignment.viewmodel.CreateEntryViewModel;
+import com.google.android.material.snackbar.Snackbar;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,11 +47,10 @@ public class ViewUsersInRecyclerFragment extends Fragment implements ItemClickLi
     private CreateEntryViewModel createEntryViewModel;
     @BindView(R.id.user_recycler_view)
     RecyclerView UserList;
-    ArrayList<User> queryArrayList = new ArrayList<>();
     boolean multiSelectStatus = false;
-
+    List<User> currentUserList;
     ArrayList<User> deleteUserList = new ArrayList<>();
-
+    CoordinatorLayout coordinatorLayout;
 
     private UserListAdapter userListAdapter = new UserListAdapter(this);
 
@@ -60,8 +65,7 @@ public class ViewUsersInRecyclerFragment extends Fragment implements ItemClickLi
         View view = inflater.inflate(R.layout.activity_show_users_in_recyclerview, container, false);
         ButterKnife.bind(this, view);
         setHasOptionsMenu(true);
-
-
+        currentUserList = new ArrayList<>();
         return view;
     }
 
@@ -70,6 +74,7 @@ public class ViewUsersInRecyclerFragment extends Fragment implements ItemClickLi
         super.onViewCreated(view, savedInstanceState);
         createEntryViewModel = ViewModelProviders.of(getActivity()).get(CreateEntryViewModel.class);
         createEntryViewModel.fetchDataFromDatabase();
+        coordinatorLayout = view.findViewById(R.id.coordinator_layout);
 
         UserList.setLayoutManager(new LinearLayoutManager(getContext()));
         new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(UserList);
@@ -78,6 +83,7 @@ public class ViewUsersInRecyclerFragment extends Fragment implements ItemClickLi
 
         createEntryViewModel = new ViewModelProvider(getActivity()).get(CreateEntryViewModel.class);
 
+        observeForDbChanges();
         observeQueryString();
         observeUsersDataList();
         observeMultiSelectStatus();
@@ -104,9 +110,7 @@ public class ViewUsersInRecyclerFragment extends Fragment implements ItemClickLi
 
     private void queryChatList(String query) {
         query = "%" + query + "%";
-
         createEntryViewModel.queryInit(query);
-
         createEntryViewModel.queriedUserList.observe(this, new Observer<PagedList<User>>() {
             @Override
             public void onChanged(PagedList<User> users) {
@@ -119,7 +123,6 @@ public class ViewUsersInRecyclerFragment extends Fragment implements ItemClickLi
     public void onResume() {
         // observeUsersDataList();
         super.onResume();
-
         Log.e("TAG", "onResume: ");
     }
 
@@ -132,60 +135,62 @@ public class ViewUsersInRecyclerFragment extends Fragment implements ItemClickLi
         }
 
         @Override
-        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+        public void onSwiped(@NonNull @NotNull RecyclerView.ViewHolder viewHolder, int direction) {
             userListAdapter.notifyItemChanged(viewHolder.getAdapterPosition());
             createEntryViewModel.userList.observe(getActivity(), users -> {
                 if (users != null && users.size() > 0) {
                     storeUser(users);
                 }
             });
+            if (viewHolder instanceof UserListAdapter.MyViewHolder) {
+                // get the removed item name to display it in snack bar
+                String name = userList.get(viewHolder.getAdapterPosition()).getName();
 
+                // backup of removed item for undo purpose
+                final User deletedItem = userList.get(viewHolder.getAdapterPosition());
+                final int deletedIndex = viewHolder.getAdapterPosition();
 
-            // User user=userList.get(viewHolder.getAdapterPosition());
+                // remove the item from recycler view
+                createEntryViewModel.deleteUserFromDatabase(userList.get(viewHolder.getAdapterPosition()).getId());
 
+                // showing snack bar with Undo option
+                Snackbar snackbar = Snackbar
+                        .make(coordinatorLayout, name + " removed from cart!", Snackbar.LENGTH_LONG);
+                snackbar.setAction("UNDO", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
 
-            final CharSequence[] options = {"View Details", "Edit", "Delete", "Cancel"};
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-            builder.setTitle("Options");
-
-            builder.setItems(options, new DialogInterface.OnClickListener() {
-
-                @Override
-                public void onClick(DialogInterface dialog, int item) {
-
-                    if (options[item].equals("View Details")) {
-                        Intent intent = new Intent(getActivity(), DetailsOfUserActivity.class);
-                        intent.putExtra("ID", String.valueOf(userList.get(viewHolder.getAdapterPosition()).getId()));
-                        getActivity().startActivity(intent);
-                    } else if (options[item].equals("Edit")) {
-                        Intent intent = new Intent(getActivity(), EditUserDetailActivity.class);
-                        intent.putExtra("ID", String.valueOf(userList.get(viewHolder.getAdapterPosition()).getId()));
-                        getActivity().startActivity(intent);
-
-                    } else if (options[item].equals("Delete")) {
-                        createEntryViewModel.deleteUserFromDatabase(userList.get(viewHolder.getAdapterPosition()).getId());
-
-                    } else if (options[item].equals("Cancel")) {
-                        dialog.dismiss();
+                        // undo is selected, restore the deleted item
+//                        userListAdapter.restoreItem(deletedItem, deletedIndex);
+                        createEntryViewModel.undoDeleteInDatabase(userList.get(viewHolder.getAdapterPosition()),userList.get(viewHolder.getAdapterPosition()).getId());
                     }
-                }
-            });
-            builder.show();
-        }
+                });
+                snackbar.setActionTextColor(Color.YELLOW);
+                snackbar.show();
 
+            }
+        }
         private void storeUser(List<User> users) {
             userList = new ArrayList<>();
             userList.addAll(users);
 
         }
-
-
     };
-
 
     private void observeUsersDataList() {
         createEntryViewModel.userList.observe(this, users -> userListAdapter.submitList(users));
+    }
+
+    private void observeForDbChanges() {
+
+        createEntryViewModel.userList.observe(getViewLifecycleOwner(), new Observer<PagedList<User>>() {
+            @Override
+            public void onChanged(PagedList<User> users) {
+//                currentUserList.clear();
+                currentUserList = users.snapshot();
+                userListAdapter.submitList(users);
+            }
+        });
 
     }
 

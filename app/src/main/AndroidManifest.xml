@@ -14,7 +14,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Assignment">
         <activity android:name=".activities.EditUserDetailActivity"></activity>
-        <activity android:name=".activities.DetailsOfUserActivity" />
         <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

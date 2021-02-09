@@ -13,27 +13,34 @@ public class LocalRepository {
     private Context ctx;
     private UserDao userDao;
 
-    public LocalRepository(Context ctx){
+    public LocalRepository(Context ctx) {
         this.ctx = ctx;
         userDao = UserDatabase.getInstance(ctx).userDao();
     }
-    public Completable insert(User user){
+
+    public Completable insert(User user) {
         return userDao.insert(user);
     }
 
-    public Completable deleteUser(int id){
+    public Completable undoDeleteInDatabase(User user, int id) {
+        return userDao.undoDeleteInDatabase(user.getName(), user.getBirthday(), user.getPhoneNumber(),
+                user.getImage(), user.getId());
+    }
+
+    public Completable deleteUser(int id) {
         return userDao.deleteUser(id);
     }
 
-    public Completable updateUserById(String u_name,String u_bday,String u_phonenumber,int Id){
-        return userDao.updateUserById( u_name,u_bday,u_phonenumber, Id);
+    public Completable deleteUserfromDb(Integer id) {
+        return userDao.deleteUser(id);
     }
 
-
+    public Completable updateUserById(String u_name, String u_bday, String u_phonenumber, int Id) {
+        return userDao.updateUserById(u_name, u_bday, u_phonenumber, Id);
+    }
 
     public Single<User> getUserById(int id) {
         return userDao.getUserById(id);
-
     }
 
     public DataSource.Factory<Integer, User> queryAllUser(String query) {
@@ -41,6 +48,10 @@ public class LocalRepository {
     }
 
     public DataSource.Factory<Integer, User> getAllUsers() {
+        return userDao.getAllUser();
+    }
+
+    public DataSource.Factory<Integer, User> getAllUser() {
         return userDao.getAllUser();
     }
 
