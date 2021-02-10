@@ -99,15 +99,6 @@ public class Contact implements Comparable<Contact> {
     }
 
 
-//    @Override
-//    public static int compareTo(@NonNull Contact other) {
-//        if (mDisplayName != null && other.mDisplayName != null) {
-//            return mDisplayName.compareTo(other.mDisplayName);
-//        }
-//
-//        return -1;
-//    }
-
     @Override
     public int hashCode() {
         return (int) (mId ^ (mId >>> 32));

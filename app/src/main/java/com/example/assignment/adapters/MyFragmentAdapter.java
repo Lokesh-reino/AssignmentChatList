@@ -19,14 +19,14 @@ public class MyFragmentAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position){
             case 1: return new CreateEntryFragment();
-            case 2: return new ContactListFragment();
             default: return new ViewUsersInRecyclerFragment();
+            case 2: return new ContactListFragment();
         }
     }
 
     @Override
     public int getCount() {
-        return 2;
+        return 3;
     }
     @Override
     public CharSequence getPageTitle(int position) {

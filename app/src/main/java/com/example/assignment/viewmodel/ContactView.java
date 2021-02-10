@@ -3,6 +3,7 @@ package com.example.assignment.viewmodel;
 import android.content.Context;
 import android.net.Uri;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,7 @@ public class ContactView extends RelativeLayout {
         }
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
+        Log.d("InContactView","yellow");
         return (ContactView) inflater.inflate(R.layout.row_contacts, parent, attachToParent);
     }
 

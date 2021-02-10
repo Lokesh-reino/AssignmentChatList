@@ -14,11 +14,12 @@ import android.view.ViewGroup;
 import com.example.assignment.R;
 import com.example.assignment.adapters.ContactAdapter;
 import com.example.assignment.models.Contact;
+import com.example.assignment.models.RxContacts;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
-import ir.mirrajabi.rxcontacts.RxContacts;
+
 
 public class ContactListFragment extends Fragment {
 
@@ -56,7 +57,7 @@ public class ContactListFragment extends Fragment {
 
     private void initializeRecyclerView() {
         ContactAdapter contactAdapter = getContactAdapter();
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         RecyclerView rv = getActivity().findViewById(R.id.contacts_recycler_view);
         if (rv != null) {
             rv.setAdapter(contactAdapter);
@@ -74,7 +75,7 @@ public class ContactListFragment extends Fragment {
 
     private void requestContacts() {
         compositeDisposable.add(RxContacts
-                .fetch(getActivity())
+                .fetch(getContext())
                 .filter(m -> m.getInVisibleGroup() == 1)
                 .toSortedList(Contact::compareTo)
                 .subscribeOn(Schedulers.io())

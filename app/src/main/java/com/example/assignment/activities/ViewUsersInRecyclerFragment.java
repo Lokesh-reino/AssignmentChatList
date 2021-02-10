@@ -1,5 +1,6 @@
 package com.example.assignment.activities;
 
+
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -19,7 +20,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,9 +31,10 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.chauthai.swipereveallayout.SwipeRevealLayout;
+import com.example.assignment.AlertDialogHelper;
 import com.example.assignment.EditAndDeleteInterface;
-import com.example.assignment.ItemClickListener;
 import com.example.assignment.R;
+import com.example.assignment.RecyclerItemClickListener;
 import com.example.assignment.adapters.UserListAdapter;
 import com.example.assignment.models.User;
 import com.example.assignment.viewmodel.CreateEntryViewModel;
@@ -40,7 +45,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ViewUsersInRecyclerFragment extends Fragment implements  EditAndDeleteInterface {
+public class ViewUsersInRecyclerFragment extends Fragment implements EditAndDeleteInterface, AlertDialogHelper.AlertDialogListener {
 
     private CreateEntryViewModel createEntryViewModel;
     @BindView(R.id.user_recycler_view)
@@ -51,8 +56,12 @@ public class ViewUsersInRecyclerFragment extends Fragment implements  EditAndDel
     Button txtEdit, txtDelete;
     SwipeRevealLayout swipeRevealLayout;
     ArrayList<User> userList;
-    private UserListAdapter userListAdapter = new UserListAdapter((EditAndDeleteInterface) this, getActivity());
-
+    private UserListAdapter userListAdapter;
+    ActionMode mActionMode;
+    ArrayList<User> multiselect_list = new ArrayList<>();
+    Menu context_menu;
+    boolean isMultiSelect = false;
+    AlertDialogHelper alertDialogHelper;
 
     public static ViewUsersInRecyclerFragment newInstance() {
         return new ViewUsersInRecyclerFragment();
@@ -62,9 +71,32 @@ public class ViewUsersInRecyclerFragment extends Fragment implements  EditAndDel
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_show_users_in_recyclerview, container, false);
+        userListAdapter = new UserListAdapter(this, getActivity());
         ButterKnife.bind(this, view);
         setHasOptionsMenu(true);
         currentUserList = new ArrayList<>();
+        UserList.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), UserList, new RecyclerItemClickListener.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                if (isMultiSelect)
+                    multi_select(position);
+                else {
+                    ViewEditActivityCalling("view", position);
+                }
+            }
+
+            @Override
+            public void onItemLongClick(View view, int position) {
+                if (!isMultiSelect) {
+                    multiselect_list = new ArrayList<>();
+                    isMultiSelect = true;
+                    if (mActionMode == null) {
+                        mActionMode = getActivity().startActionMode(mActionModeCallback);
+                    }
+                }
+                multi_select(position);
+            }
+        }));
         return view;
     }
 
@@ -75,9 +107,6 @@ public class ViewUsersInRecyclerFragment extends Fragment implements  EditAndDel
         createEntryViewModel.fetchDataFromDatabase();
 
         UserList.setLayoutManager(new LinearLayoutManager(getContext()));
-
-       //new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(UserList);
-
         txtDelete = view.findViewById(R.id.txtDelete);
         txtEdit = view.findViewById(R.id.txtEdit);
         swipeRevealLayout = view.findViewById(R.id.swipelayout);
@@ -85,12 +114,94 @@ public class ViewUsersInRecyclerFragment extends Fragment implements  EditAndDel
         UserList.setAdapter(userListAdapter);
 
         createEntryViewModel = new ViewModelProvider(getActivity()).get(CreateEntryViewModel.class);
-
+        alertDialogHelper = new AlertDialogHelper(getContext(), ViewUsersInRecyclerFragment.this);
         observeForDbChanges();
         observeQueryString();
         observeUsersDataList();
         observeMultiSelectStatus();
+
     }
+
+    public void multi_select(int position) {
+        if (mActionMode != null) {
+            if (multiselect_list.contains(currentUserList.get(position))) {
+                multiselect_list.remove(currentUserList.get(position));
+            } else {
+                multiselect_list.add(currentUserList.get(position));
+            }
+            if (multiselect_list.size() > 0)
+                mActionMode.setTitle("" + multiselect_list.size());
+            else
+                mActionMode.setTitle("0");
+            refreshAdapter();
+
+        }
+    }
+
+    @Override
+    public void onPositiveClick(int from) {
+        if (from == 1) {
+            if (multiselect_list.size() > 0) {
+                currentUserList = multiselect_list;
+                for (int i = 0; i < multiselect_list.size(); i++)
+                    createEntryViewModel.deleteUserFromDatabase(currentUserList.get(i).getId());
+                userListAdapter.notifyDataSetChanged();
+
+                if (mActionMode != null) {
+                    mActionMode.finish();
+                }
+                Toast.makeText(getActivity(), "Delete Click", Toast.LENGTH_SHORT).show();
+            }
+        } else if (from == 2) {
+            if (mActionMode != null) {
+                mActionMode.finish();
+            }
+        }
+    }
+
+    @Override
+    public void onNegativeClick(int from) {
+        mActionModeCallback.onDestroyActionMode(mActionMode);
+    }
+
+    //Important
+    private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
+        Menu menu;
+
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            // Inflate a menu resource providing context menu items
+            MenuInflater inflater = mode.getMenuInflater();
+            this.menu = menu;
+            inflater.inflate(R.menu.menu_multi_select, menu);
+            context_menu = menu;
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false; // Return false if nothing is done
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.action_delete:
+                    alertDialogHelper.showAlertDialog("", "Are you sure want to delete all the selected contacts(s)?", "DELETE", "CANCEL", 1, false);
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            mActionMode = null;
+            isMultiSelect = false;
+            multiselect_list = new ArrayList<>();
+            refreshAdapter();
+        }
+    };
 
     private void observeMultiSelectStatus() {
         createEntryViewModel.getIsMultiSelectOn().observe(this, new Observer<Boolean>() {
@@ -99,6 +210,10 @@ public class ViewUsersInRecyclerFragment extends Fragment implements  EditAndDel
                 multiSelectStatus = aBoolean;
             }
         });
+    }
+
+    public void refreshAdapter() {
+        userListAdapter.selected_usersList = multiselect_list;
     }
 
     private void observeQueryString() {
@@ -129,77 +244,15 @@ public class ViewUsersInRecyclerFragment extends Fragment implements  EditAndDel
         Log.e("TAG", "onResume: ");
     }
 
-//    ItemTouchHelper.SimpleCallback
-
-   /* ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
-        ArrayList<User> userList;
-
-        @Override
-        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-            return false;
-        }
-
-        @Override
-        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-
-            userListAdapter.notifyItemChanged(viewHolder.getAdapterPosition());
-            createEntryViewModel.userList.observe(getActivity(), users -> {
-                if (users != null && users.size() > 0) {
-                    storeUser(users);
-                }
-            });
-
-
-            final CharSequence[] options = {"View Details", "Edit", "Delete", "Cancel"};
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-            builder.setTitle("Options");
-
-            builder.setItems(options, new DialogInterface.OnClickListener() {
-
-                @Override
-                public void onClick(DialogInterface dialog, int item) {
-                    Toast.makeText(getActivity(), "On Click", Toast.LENGTH_SHORT).show();
-                    if (options[item].equals("View Details")) {
-                        Intent intent = new Intent(getActivity(), EditUserDetailActivity.class);
-                        intent.putExtra("ID", String.valueOf(userList.get(viewHolder.getAdapterPosition()).getId()));
-                        getActivity().startActivity(intent);
-
-
-                    } else if (options[item].equals("Edit")) {
-                        Intent intent = new Intent(getActivity(), EditUserDetailActivity.class);
-                        intent.putExtra("ID", String.valueOf(userList.get(viewHolder.getAdapterPosition()).getId()));
-                        getActivity().startActivity(intent);
-
-                    } else if (options[item].equals("Delete")) {
-                        Log.d("abc", "deletion");
-                        createEntryViewModel.deleteUserFromDatabase(userList.get(viewHolder.getAdapterPosition()).getId());
-
-                    } else if (options[item].equals("Cancel")) {
-                        dialog.dismiss();
-                    }
-                }
-            });
-            builder.show();
-        }
-
-        private void storeUser(List<User> users) {
-            userList = new ArrayList<>();
-            userList.addAll(users);
-        }
-    };
-*/
     private void observeUsersDataList() {
         createEntryViewModel.userList.observe(this, users -> userListAdapter.submitList(users));
 
     }
 
     private void observeForDbChanges() {
-
         createEntryViewModel.userList.observe(getViewLifecycleOwner(), new Observer<PagedList<User>>() {
             @Override
             public void onChanged(PagedList<User> users) {
-//                currentUserList.clear();
                 currentUserList = users.snapshot();
                 userListAdapter.submitList(users);
             }
@@ -207,57 +260,13 @@ public class ViewUsersInRecyclerFragment extends Fragment implements  EditAndDel
 
     }
 
-   /* @Override
-    public void onItemClicked(View view, User user) {
-        Log.d("TAG", String.valueOf(multiSelectStatus));
-        if (multiSelectStatus) {
-            if (!deleteUserList.contains(user)) {
-                view.setBackgroundColor(ContextCompat.getColor(view.getContext(), R.color.purple_200));
-                deleteUserList.add(user);
-            } else {
-                deleteUserList.remove(user);
-                view.setBackgroundColor(ContextCompat.getColor(view.getContext(), R.color.purple_500));
-            }
-
-        } else {
-            Intent intent = new Intent(getActivity(), EditUserDetailActivity.class);
-            intent.putExtra("ID", String.valueOf(user.getId()));
-            getActivity().startActivity(intent);
-
-        }
-        Log.d("TAG", "Default intent called");
-    }
-
-    @Override
-    public void onItemLongClicked(View view, User user, int index) {
-        view.setBackgroundColor(ContextCompat.getColor(view.getContext(), R.color.purple_200));
-        deleteUserList.add(user);
-        Log.d("TAG", "LongItemClick: " + index);
-        createEntryViewModel.setIsMultiSelect(true);
-
-    }*/
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-
-        if (item.getItemId() == R.id.multi_select_delete_menu) {
-
-            for (User user : deleteUserList) {
-                createEntryViewModel.deleteUserFromDatabase(user.getId());
-            }
-
-            deleteUserList.clear();
-            createEntryViewModel.setIsMultiSelect(false);
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     @Override
     public void edit(int clickPosition) {
+        ViewEditActivityCalling("edit", clickPosition);
+    }
 
-       addUserForEditDelete();
-
-        Toast.makeText(getActivity(), "onedit", Toast.LENGTH_SHORT).show();
+    private void ViewEditActivityCalling(String edit, int clickPosition) {
+        addUserForEditDelete();
         Intent intent = new Intent(getActivity(), EditUserDetailActivity.class);
         intent.putExtra("ID", String.valueOf(userList.get(clickPosition).getId()));
         getActivity().startActivity(intent);
@@ -281,16 +290,4 @@ public class ViewUsersInRecyclerFragment extends Fragment implements  EditAndDel
         addUserForEditDelete();
         createEntryViewModel.deleteUserFromDatabase(userList.get(clickPosition).getId());
     }
-
-    @Override
-    public void onItemClicked(View view, int position) {
-
-    }
-
-    @Override
-    public void onItemLongClicked(View v, int position, int adapterPosition) {
-
-    }
-
-
 }

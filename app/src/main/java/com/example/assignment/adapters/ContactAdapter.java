@@ -14,13 +14,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHolder> {
+
     private Callback callback;
     private List<Contact> contacts;
 
     @Override
     public ViewHolder onCreateViewHolder (ViewGroup parent, int viewType) {
         // Inflate the ContactView and set the click listener
-        ContactView contactView = (ContactView) LayoutInflater.from(parent.getContext()).inflate(R.layout.row_user, parent, false);
+        ContactView contactView = ContactView.inflate(parent, false);
         contactView.setOnClickListener(v -> {
             if (callback != null) {
                 Contact contact = ((ContactView) v).getContact();
@@ -74,6 +75,9 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
      * Sets the contacts to represent in the recycler view.
      * @param contacts The contacts.
      */
+    public void setContacts (List<Contact> contacts) {
+        this.contacts = contacts;
+    }
 
     /**
      * Sets the Callback to be notified on user interactions with contacts.
@@ -81,9 +85,6 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
      */
     public void setCallback (Callback callback) {
         this.callback = callback;
-    }
-
-    public void setContacts(List<ir.mirrajabi.rxcontacts.Contact> contacts) {
     }
 
     /**

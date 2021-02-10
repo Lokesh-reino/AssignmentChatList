@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Parcelable;
 import android.text.Html;
@@ -20,6 +21,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.paging.PagedListAdapter;
 import androidx.recyclerview.widget.DiffUtil.ItemCallback;
@@ -42,14 +45,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class UserListAdapter extends PagedListAdapter<User, UserListAdapter.MyViewHolder> {
-    //  ItemClickListener itemClickListener;
     EditAndDeleteInterface editAndDeleteInterface;
     static String id;
-
-    Context ctx;
+    Activity activity;
     public ArrayList<User> userArrayList;
     private final ViewBinderHelper viewBinderHelper = new ViewBinderHelper();
-
+    public ArrayList<User> selected_usersList = new ArrayList<>();
     public static ItemCallback<User> DIFF__CALLBACK = new ItemCallback<User>() {
         @Override
         public boolean areItemsTheSame(@NonNull User oldItem, @NonNull User newItem) {
@@ -67,7 +68,7 @@ public class UserListAdapter extends PagedListAdapter<User, UserListAdapter.MyVi
         //  this.itemClickListener = itemClickListener;
         this.editAndDeleteInterface = itemClickListener;
         viewBinderHelper.setOpenOnlyOne(true);
-        ctx = activity;
+        this.activity = activity;
     }
 
     @NonNull
@@ -107,61 +108,20 @@ public class UserListAdapter extends PagedListAdapter<User, UserListAdapter.MyVi
                 editAndDeleteInterface.delete(clickPosition);
             }
         });
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                Toast.makeText(ctx, "inside long", Toast.LENGTH_SHORT).show();
-               /* selected_usersList.clear();
-                if (long_press_enabled) {
-                    long_press_enabled = false;
-                }else{
-                    long_press_enabled = true;
-                    selected_usersList.add(user.getUid());
-                    Log.d("abc", "in adapter onLOngClick:" + user.getName());
-                }*/
-                return false;
-            }
-        });
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
+        holder.v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(ctx, "inside click", Toast.LENGTH_SHORT).show();
-                Log.d("abc", "in adapter onClick:" + user.getName());
-                /*if (long_press_enabled) {
-                    if (selected_usersList.contains(user.getUid())) {
-                        selected_usersList.remove(user.getUid());
-                        holder.itemView.setBackgroundColor(context.getResources().getColor(R.color.white));
-                    } else {
-                        selected_usersList.add(user.getUid());
-                        holder.itemView.setBackgroundColor(context.getResources().getColor(R.color._light_green));
-                    }
-                } else {
-                    Intent intentEditUserInfoActivity = new Intent(context, EditUserInfoActivity.class);
-                    intentEditUserInfoActivity.putExtra("User", userArrayList.get(position));
-                    context.startActivity(intentEditUserInfoActivity);
-                }*/
-            }
-        });
-      /*  holder.llUserRecycler.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(ctx, "on Click linear",Toast.LENGTH_LONG).show();
+                Toast.makeText(activity, "on Click image", Toast.LENGTH_LONG).show();
             }
         });
 
-        holder.userImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(ctx, "on Click image",Toast.LENGTH_LONG).show();
-            }
-        });*/
     }
 
-    class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
+    class MyViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.name_user)
         TextView userName;
-        @BindView(R.id.image_user)
+        //  @BindView(R.id.image_user)
         ImageView userImage;
         @BindView(R.id.checkbox)
         ImageView checkbox;
@@ -172,7 +132,8 @@ public class UserListAdapter extends PagedListAdapter<User, UserListAdapter.MyVi
         //        @BindView(R.id.swipelayout)
         SwipeRevealLayout swipeRevealLayout;
         LinearLayout llUserRecycler;
-
+        CardView card_view;
+        View v;
 
         CreateEntryViewModel createEntryViewModel;
 
@@ -180,54 +141,15 @@ public class UserListAdapter extends PagedListAdapter<User, UserListAdapter.MyVi
             super(itemView);
             txtEdit = itemView.findViewById(R.id.txtEdit);
             txtDelete = itemView.findViewById(R.id.txtDelete);
+            userImage = itemView.findViewById(R.id.image_user);
             swipeRevealLayout = itemView.findViewById(R.id.swipelayout);
+            card_view = itemView.findViewById(R.id.card_view);
             llUserRecycler = itemView.findViewById(R.id.llUserRecycler);
             ButterKnife.bind(this, itemView);
-            itemView.setOnClickListener(this);
-            itemView.setOnLongClickListener(this);
+            this.v = itemView;
         }
 
 
-       /* @Override
-        public void edit(int clickPosition) {
-
-        }
-
-        @Override
-        public void delete(int clickPosition) {
-
-        }*/
-
-       /* @Override
-        public void onItemClicked(View view, User user) {
-            Log.d("TAG", "onClick in adapter called: " + view.getId());
-            Toast.makeText(ctx,"on CLickk Adapter", Toast.LENGTH_SHORT).show();
-            if (editAndDeleteInterface != null)
-                editAndDeleteInterface.onItemClicked(view, getItem(getAdapterPosition()));
-        }
-
-        @Override
-        public void onItemLongClicked(View view, User user, int index) {
-            Log.d("TAG", "onLongClick boolean called: " + view.getId());
-            if (editAndDeleteInterface != null)
-                editAndDeleteInterface.onItemLongClicked(view, getItem(getAdapterPosition()), getAdapterPosition());
-
-        }*/
-
-        @Override
-        public void onClick(View view) {
-           /* if (editAndDeleteInterface != null)
-                editAndDeleteInterface.onItemClicked(view, getAdapterPosition());*/
-            Toast.makeText(ctx, " click", Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public boolean onLongClick(View v) {
-            Log.d("TAG", "onLongClick boolean called: " + v.getId());
-            Toast.makeText(ctx, "long click", Toast.LENGTH_SHORT).show();
-            /*if (editAndDeleteInterface != null)
-                editAndDeleteInterface.onItemLongClicked(v, (getAdapterPosition()), getAdapterPosition());*/
-            return true;
-        }
     }
+
 }
