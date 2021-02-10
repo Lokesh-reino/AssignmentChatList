@@ -4,7 +4,10 @@ import android.content.Context;
 
 import androidx.paging.DataSource;
 
+import com.example.assignment.models.Contact;
 import com.example.assignment.models.User;
+
+import java.util.List;
 
 import io.reactivex.Completable;
 import io.reactivex.Single;
@@ -12,10 +15,12 @@ import io.reactivex.Single;
 public class LocalRepository {
     private Context ctx;
     private UserDao userDao;
+    private ContactDao contactDao;
 
     public LocalRepository(Context ctx){
         this.ctx = ctx;
-        userDao = UserDatabase.getInstance(ctx).userDao();
+        userDao = Database.getInstance(ctx).userDao();
+        contactDao = Database.getInstance(ctx).contactDao();
     }
     public Completable insert(User user){
         return userDao.insert(user);
@@ -47,6 +52,22 @@ public class LocalRepository {
 
     public DataSource.Factory<Integer, User> getAllUser() {
         return userDao.getAllUser();
+    }
+
+    public Completable addContact(Contact contact) {
+        return contactDao.addContact(contact);
+    }
+
+    public Completable addListOfContact(List<Contact> contactList) {
+        return contactDao.addListOfContact(contactList);
+    }
+
+    public DataSource.Factory<Integer, Contact> getAllContacts() {
+        return contactDao.getAllContacts();
+    }
+
+    public DataSource.Factory<Integer, Contact> getQueryContact(String query) {
+        return contactDao.getQueryContact(query);
     }
 
 }

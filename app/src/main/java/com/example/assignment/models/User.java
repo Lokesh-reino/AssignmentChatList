@@ -19,7 +19,29 @@ public class User {
     @ColumnInfo
     private String birthday;
 
-    public User(String name, String phoneNumber, String birthday,String image) {
+
+//    @ColumnInfo(name = "createdAt")
+//    private long createdAt;
+//    @ColumnInfo(name = "modifiedAt")
+//    private long modifiedAt;
+//
+//    public long getCreatedAt() {
+//        return createdAt;
+//    }
+
+//    public void setCreatedAt(long createdAt) {
+//        this.createdAt = createdAt;
+//    }
+//
+//    public long getModifiedAt() {
+//        return modifiedAt;
+//    }
+//
+//    public void setModifiedAt(long modifiedAt) {
+//        this.modifiedAt = modifiedAt;
+//    }
+
+    public User(String name, String phoneNumber, String birthday, String image) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.birthday = birthday;

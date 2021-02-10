@@ -32,6 +32,7 @@ import android.widget.Toast;
 
 import com.chauthai.swipereveallayout.SwipeRevealLayout;
 import com.example.assignment.AlertDialogHelper;
+import com.example.assignment.Constants;
 import com.example.assignment.EditAndDeleteInterface;
 import com.example.assignment.R;
 import com.example.assignment.RecyclerItemClickListener;
@@ -75,13 +76,16 @@ public class ViewUsersInRecyclerFragment extends Fragment implements EditAndDele
         ButterKnife.bind(this, view);
         setHasOptionsMenu(true);
         currentUserList = new ArrayList<>();
+
         UserList.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), UserList, new RecyclerItemClickListener.OnItemClickListener() {
+
             @Override
             public void onItemClick(View view, int position) {
+                Log.d("TAG", "Default intent called");
                 if (isMultiSelect)
-                    multi_select(position);
+                    multi_select(position, view);
                 else {
-                    ViewEditActivityCalling("view", position);
+                    ViewEditActivityCalling(Constants.viewActionType, position);
                 }
             }
 
@@ -94,7 +98,7 @@ public class ViewUsersInRecyclerFragment extends Fragment implements EditAndDele
                         mActionMode = getActivity().startActionMode(mActionModeCallback);
                     }
                 }
-                multi_select(position);
+                multi_select(position, view);
             }
         }));
         return view;
@@ -122,11 +126,13 @@ public class ViewUsersInRecyclerFragment extends Fragment implements EditAndDele
 
     }
 
-    public void multi_select(int position) {
+    public void multi_select(int position, View view) {
         if (mActionMode != null) {
             if (multiselect_list.contains(currentUserList.get(position))) {
+                view.setBackgroundColor(ContextCompat.getColor(view.getContext(), R.color.purple_500));
                 multiselect_list.remove(currentUserList.get(position));
             } else {
+                view.setBackgroundColor(ContextCompat.getColor(view.getContext(), R.color.purple_200));
                 multiselect_list.add(currentUserList.get(position));
             }
             if (multiselect_list.size() > 0)
@@ -262,14 +268,16 @@ public class ViewUsersInRecyclerFragment extends Fragment implements EditAndDele
 
     @Override
     public void edit(int clickPosition) {
-        ViewEditActivityCalling("edit", clickPosition);
+        ViewEditActivityCalling(Constants.editActionType, clickPosition);
     }
 
-    private void ViewEditActivityCalling(String edit, int clickPosition) {
+    private void ViewEditActivityCalling(String edit_view, int clickPosition) {
         addUserForEditDelete();
         Intent intent = new Intent(getActivity(), EditUserDetailActivity.class);
         intent.putExtra("ID", String.valueOf(userList.get(clickPosition).getId()));
+        intent.putExtra(Constants.actionType, edit_view);
         getActivity().startActivity(intent);
+
     }
 
     private void addUserForEditDelete() {
@@ -290,4 +298,19 @@ public class ViewUsersInRecyclerFragment extends Fragment implements EditAndDele
         addUserForEditDelete();
         createEntryViewModel.deleteUserFromDatabase(userList.get(clickPosition).getId());
     }
+
+    @Override
+    public void imageClick(int clickPosition) {
+        Intent intent = new Intent(getActivity(), DetailOfUserDisplay.class);
+        intent.putExtra("ID", String.valueOf(userList.get(clickPosition).getId()));
+        getActivity().startActivity(intent);
+    }
+
+    public void imageOnClick(int clickPosition) {
+        Intent intent = new Intent(getActivity(), DetailOfUserDisplay.class);
+        intent.putExtra("ID", String.valueOf(userList.get(clickPosition).getId()));
+        getActivity().startActivity(intent);
+    }
+
+
 }

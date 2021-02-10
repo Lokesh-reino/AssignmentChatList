@@ -8,4 +8,6 @@ public interface ItemClickListener {
     void onItemClicked(View view, User user);
 
     void onItemLongClicked(View view, User user, int index);
+
+
 }

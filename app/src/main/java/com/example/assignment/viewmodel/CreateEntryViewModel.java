@@ -15,6 +15,8 @@ import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 
 import com.example.assignment.R;
+import com.example.assignment.helpers.SyncNativeContacts;
+import com.example.assignment.models.Contact;
 import com.example.assignment.models.User;
 import com.example.assignment.repository.LocalRepository;
 
@@ -28,6 +30,12 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class CreateEntryViewModel extends AndroidViewModel {
+
+    public final static String TAG = "TAG";
+
+    SyncNativeContacts syncNativeContacts;
+    public LiveData<PagedList<Contact>> contactList;
+    public LiveData<PagedList<Contact>> queryContactList;
 
     public LiveData<PagedList<User>> userList;
     public MutableLiveData<List<User>> users = new MutableLiveData<>();
@@ -47,10 +55,32 @@ public class CreateEntryViewModel extends AndroidViewModel {
         return queryString;
     }
 
+
+    public void contactInit() {
+
+        PagedList.Config config = (new PagedList.Config.Builder()).setEnablePlaceholders(false)
+                .setInitialLoadSizeHint(10)
+                .setPageSize(10).build();
+
+        contactList = new LivePagedListBuilder<>(repository.getAllContacts(), config).build();
+    }
+
+    public void queryContactInit(String query) {
+        repository = new LocalRepository(getApplication());
+
+        PagedList.Config config = (new PagedList.Config.Builder()).setEnablePlaceholders(false)
+                .setInitialLoadSizeHint(10)
+                .setPageSize(10).build();
+
+        queryContactList = new LivePagedListBuilder<>(repository.getQueryContact(query), config).build();
+    }
+
+
     private CompositeDisposable disposable = new CompositeDisposable();
 
     public CreateEntryViewModel(@NonNull Application application) {
         super(application);
+        repository = new LocalRepository(getApplication());
     }
 
     public void refresh() {
@@ -221,4 +251,46 @@ public class CreateEntryViewModel extends AndroidViewModel {
         toast.show();
     }
 
+    public void completeContactSync() {
+        syncNativeContacts = new SyncNativeContacts(getApplication());
+        syncNativeContacts.getContactArrayList().doAfterSuccess(newlist -> addContactListToDB(newlist))
+                .subscribeOn(Schedulers.io())
+                .subscribe(new SingleObserver<List<Contact>>() {
+                    @Override
+                    public void onSubscribe(@io.reactivex.annotations.NonNull Disposable d) {
+                        Log.e(TAG, "onSubscribe: Inside complete sync  ");
+                    }
+
+                    @Override
+                    public void onSuccess(@io.reactivex.annotations.NonNull List<Contact> contactList) {
+                        Log.e(TAG, "onSuccess: Inside complete sync   -->>  " + contactList.size());
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                        Log.e(TAG, "onError: Inside complete sync error ->> " + e.getMessage());
+                    }
+                });
+
+    }
+    public void addContactListToDB(List<Contact> contactList) {
+
+        repository.addListOfContact(contactList)
+                .subscribe(new CompletableObserver() {
+                    @Override
+                    public void onSubscribe(@io.reactivex.annotations.NonNull Disposable d) {
+                        Log.d("TAG", "Inside onSubscribe of addContactListDB in SyncNativeContacts");
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.d("TAG", "Inside onComplete of addContactListDB in SyncNativeContacts");
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                        Log.d("TAG", "Inside onError of addContactListDB in SyncNativeContacts.: " + e.getMessage());
+                    }
+                });
+    }
 }

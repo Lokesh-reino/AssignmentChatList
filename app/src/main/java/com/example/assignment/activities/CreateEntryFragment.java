@@ -40,6 +40,8 @@ import com.example.assignment.models.User;
 import com.example.assignment.repository.LocalRepository;
 import com.example.assignment.viewmodel.CreateEntryViewModel;
 
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import butterknife.BindView;
@@ -75,6 +77,9 @@ public class CreateEntryFragment extends Fragment {
 
     private final int REQUEST_CODE_CAMERA = 0;
     private final int REQUEST_CODE_GALLERY = 1;
+    private Long createdDate;
+    private Long modifiedDate;
+    SimpleDateFormat sdf = new SimpleDateFormat("MM dd,yyyy HH:mm");
     UriFromBitmap uriFromBitmap;
 
     public static CreateEntryFragment newInstance() {
@@ -114,6 +119,9 @@ public class CreateEntryFragment extends Fragment {
                 String name = userName.getText().toString();
                 String phoneNumber = userPhoneNumber.getText().toString();
                 String birthday = userBirthDay.getText().toString();
+                createdDate = System.currentTimeMillis();
+                modifiedDate = System.currentTimeMillis();
+                Date date = new Date(createdDate);
 
                 User user = new User(name, phoneNumber, birthday, ProfilePicUri);
                 mViewModel.saveToDatabase(user);

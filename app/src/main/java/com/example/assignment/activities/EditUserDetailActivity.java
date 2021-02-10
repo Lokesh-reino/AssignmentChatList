@@ -9,6 +9,7 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.assignment.Constants;
 import com.example.assignment.R;
 import com.example.assignment.models.User;
 import com.example.assignment.viewmodel.CreateEntryViewModel;
@@ -29,12 +31,42 @@ public class EditUserDetailActivity extends AppCompatActivity {
     Button button;
     EditText editTextName, editTextPhone, editTextBirthday;
     User user;
+    String action;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_user_detail);
         init();
+    }
+
+    private void setEditAndViewAction() {
+
+        if(action.equalsIgnoreCase(Constants.viewActionType)){
+            disableEditableView();
+        }
+        else if (action.equalsIgnoreCase(Constants.editActionType)){
+            enableEditableView();
+
+        }
+    }
+
+    private void enableEditableView() {
+
+        editTextName.setEnabled(true);
+        editTextPhone.setEnabled(true);
+        editTextBirthday.setEnabled(true);
+        button.setVisibility(View.VISIBLE);
+        imageViewUserProfilePic.setEnabled(true);
+    }
+
+    private void disableEditableView() {
+
+        imageViewUserProfilePic.setEnabled(false);
+        editTextName.setEnabled(false);
+        editTextPhone.setEnabled(false);
+        editTextBirthday.setEnabled(false);
+        button.setVisibility(View.GONE);
     }
 
     private void init() {
@@ -45,6 +77,8 @@ public class EditUserDetailActivity extends AppCompatActivity {
         button = findViewById(R.id.button_save);
 
         user = (User) getIntent().getSerializableExtra("User");
+
+        action = getIntent().getStringExtra(Constants.actionType);
 
         viewModel = ViewModelProviders.of(this).get(CreateEntryViewModel.class);
 
@@ -73,6 +107,14 @@ public class EditUserDetailActivity extends AppCompatActivity {
             Uri imgUri=Uri.parse("android.resource://com.example.assignment/"+R.drawable.ic_baseline_person_24);
             imageViewUserProfilePic.setImageURI(null);
             imageViewUserProfilePic.setImageURI(imgUri);}
+            imageViewUserProfilePic.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(EditUserDetailActivity.this, DetailOfUserDisplay.class);
+                    intent.putExtra("User", user.getImage());
+                    startActivity(intent);
+                }
+            });
 
             button.setOnClickListener(new View.OnClickListener() {
                 @Override

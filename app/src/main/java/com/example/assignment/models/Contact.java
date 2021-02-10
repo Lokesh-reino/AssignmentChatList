@@ -7,130 +7,76 @@ import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
+
+import com.example.assignment.converters.TypeListConverter;
+import com.google.gson.annotations.SerializedName;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serializable;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
-public class Contact implements Comparable<Contact> {
-    private final long mId;
-    private int mInVisibleGroup;
-    @Nullable
-    private String mDisplayName;
-    private boolean mStarred;
-    @Nullable
-    private Uri mPhoto;
-    @Nullable
-    private Uri mThumbnail;
+@Entity(tableName = "ContactDB")
+public class Contact implements Serializable {
+
+    @PrimaryKey
     @NonNull
-    private Set<String> mEmails = new HashSet<>();
-    @NonNull
-    private Set<String> mPhoneNumbers = new HashSet<>();
+    private String _id;
+    private String name;
 
-    Contact(long id) {
-        this.mId = id;
+    @TypeConverters(TypeListConverter.class)
+    private List<String> number;
+
+    public Contact(@NonNull String _id, String name, List<String> number) {
+        this._id = _id;
+        this.name = name;
+        this.number = number;
     }
 
-    public long getId() {
-        return mId;
-    }
-
-    public int getInVisibleGroup() {
-        return mInVisibleGroup;
-    }
-
-    public void setInVisibleGroup(int inVisibleGroup) {
-        mInVisibleGroup = inVisibleGroup;
-    }
-
-    @Nullable
-    public String getDisplayName() {
-        return mDisplayName;
-    }
-
-    public void setDisplayName(@Nullable String displayName) {
-        mDisplayName = displayName;
-    }
-
-    public boolean isStarred() {
-        return mStarred;
-    }
-
-    public void setStarred(boolean starred) {
-        mStarred = starred;
-    }
-
-    @Nullable
-    public Uri getPhoto() {
-        return mPhoto;
-    }
-
-    public void setPhoto(@Nullable Uri photo) {
-        mPhoto = photo;
-    }
-
-    @Nullable
-    public Uri getThumbnail() {
-        return mThumbnail;
-    }
-
-
-    public void setThumbnail(@Nullable Uri thumbnail) {
-        mThumbnail = thumbnail;
+    public Contact() {
     }
 
     @NonNull
-    public Set<String> getEmails() {
-        return mEmails;
+    public String get_id() {
+        return _id;
     }
 
-    public void setEmails(@NonNull Set<String> emails) {
-        mEmails = emails;
+    public void set_id(@NonNull String _id) {
+        this._id = _id;
     }
 
-    @NonNull
-    public Set<String> getPhoneNumbers() {
-        return mPhoneNumbers;
+    public String getName() {
+        return name;
     }
 
-    public void setPhoneNumbers(@NonNull Set<String> phoneNumbers) {
-        mPhoneNumbers = phoneNumbers;
+    public void setName(String name) {
+        this.name = name;
     }
 
+    public List<String> getNumber() {
+        return number;
+    }
 
-    @Override
-    public int hashCode() {
-        return (int) (mId ^ (mId >>> 32));
+    public void setNumber(List<String> number) {
+        this.number = number;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         Contact contact = (Contact) o;
-        return mId == contact.mId;
-    }
-
-    public static int compareTo(ir.mirrajabi.rxcontacts.Contact contact, ir.mirrajabi.rxcontacts.Contact contact1) {
-        if (contact.getDisplayName() != null && contact1.getDisplayName() != null) {
-            return contact.getDisplayName().compareTo(contact1.getDisplayName());
-        }
-
-        return -1;
+        return _id.equals(contact._id) &&
+                Objects.equals(name, contact.name) &&
+                Objects.equals(number, contact.number);
     }
 
     @Override
-    public int compareTo(Contact other) {
-        if (mDisplayName != null && other.mDisplayName != null) {
-            return mDisplayName.compareTo(other.mDisplayName);
-        }
-
-        return -1;
-//        return 0;
+    public int hashCode() {
+        return Objects.hash(_id, name, number);
     }
 }

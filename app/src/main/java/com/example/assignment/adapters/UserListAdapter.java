@@ -33,6 +33,7 @@ import com.chauthai.swipereveallayout.ViewBinderHelper;
 import com.example.assignment.EditAndDeleteInterface;
 import com.example.assignment.R;
 import com.example.assignment.ItemClickListener;
+import com.example.assignment.activities.DetailOfUserDisplay;
 import com.example.assignment.activities.EditUserDetailActivity;
 import com.example.assignment.activities.MainActivity;
 import com.example.assignment.models.User;
@@ -97,6 +98,13 @@ public class UserListAdapter extends PagedListAdapter<User, UserListAdapter.MyVi
         viewBinderHelper.bind(holder.swipeRevealLayout, String.valueOf(user.getId()));
         holder.txtEdit.setTag(position);
         holder.txtDelete.setTag(position);
+        holder.userImage.setTag(position);
+//        holder.userImage.
+        holder.userImage.setOnClickListener(v -> {
+            int clickPosition = (int) holder.txtEdit.getTag();
+            editAndDeleteInterface.imageClick(clickPosition);
+        });
+
         holder.txtEdit.setOnClickListener(v -> {
             int clickPosition = (int) holder.txtEdit.getTag();
             editAndDeleteInterface.edit(clickPosition);
