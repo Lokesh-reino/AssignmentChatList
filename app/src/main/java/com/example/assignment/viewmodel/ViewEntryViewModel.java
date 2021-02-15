@@ -7,8 +7,8 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.assignment.models.User;
-import com.example.assignment.repository.UserDao;
-import com.example.assignment.repository.UserDatabase;
+import com.example.assignment.interfaces.UserDao;
+import com.example.assignment.repository.AppDatabase;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ import io.reactivex.schedulers.Schedulers;
 
 public class ViewEntryViewModel extends AndroidViewModel {
     public MutableLiveData<List<User>> users = new MutableLiveData<>();
-    UserDao dao = UserDatabase.getInstance(getApplication()).userDao();
+    UserDao dao = AppDatabase.getInstance(getApplication()).userDao();
 
     private CompositeDisposable disposable = new CompositeDisposable();
 
