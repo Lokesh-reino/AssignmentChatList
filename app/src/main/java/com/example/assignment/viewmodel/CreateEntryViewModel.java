@@ -44,7 +44,7 @@ public class CreateEntryViewModel extends AndroidViewModel {
     public CreateEntryViewModel(@NonNull Application application) {
         super(application);
     }
-    
+
     public void refresh(){
         fetchDataFromDatabase();
     }
@@ -69,7 +69,7 @@ public class CreateEntryViewModel extends AndroidViewModel {
             @Override
             public void onComplete() {
                 fetchDataFromDatabase();
-              //  Toast.makeText(getApplication(),"User Saved",Toast.LENGTH_SHORT).show();
+                //  Toast.makeText(getApplication(),"User Saved",Toast.LENGTH_SHORT).show();
                 Log.e("Tab1Viewmodel", "<---------- onComplete: User Saved in DB ---------->" );
             }
             @Override
@@ -85,29 +85,29 @@ public class CreateEntryViewModel extends AndroidViewModel {
         repository.getUserById(id).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<User>() {
-            @Override
-            public void onSubscribe(@io.reactivex.annotations.NonNull Disposable d) {
+                    @Override
+                    public void onSubscribe(@io.reactivex.annotations.NonNull Disposable d) {
 
-            }
+                    }
 
-            @Override
-            public void onSuccess(@io.reactivex.annotations.NonNull User user1) {
-                user.setValue(user1);
+                    @Override
+                    public void onSuccess(@io.reactivex.annotations.NonNull User user1) {
+                        user.setValue(user1);
 
-            }
+                    }
 
-            @Override
-            public void onError(@io.reactivex.annotations.NonNull Throwable e) {
-                e.printStackTrace();
+                    @Override
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                        e.printStackTrace();
 
-            }
-        });
+                    }
+                });
 
     }
 
-   public void deleteUserFromDatabase(int id){
+    public void deleteUserFromDatabase(int id){
         repository.deleteUser(id).subscribeOn(Schedulers.io())
-               .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {
                     @Override
                     public void onSubscribe(@io.reactivex.annotations.NonNull Disposable d) {
@@ -127,8 +127,8 @@ public class CreateEntryViewModel extends AndroidViewModel {
 
     }
 
-    public void updateUser(String u_name,String u_bday,String u_phonenumber,int Id){
-        repository.updateUserById(u_name, u_bday,u_phonenumber, Id).subscribeOn(Schedulers.io())
+    public void updateUser(String name, String birthday, String phoneNumber, String ProfilePicPath, Long createdDate, Long modifiedDate, String phoneNumber2, String phoneNumber3, int Id){
+        repository.updateUserById(name, birthday, phoneNumber,ProfilePicPath,createdDate,modifiedDate,phoneNumber2,phoneNumber3, Id).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {
                     @Override
