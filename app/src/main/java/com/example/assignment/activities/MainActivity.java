@@ -4,14 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.MenuItemCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.FragmentTransaction;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,13 +16,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.example.assignment.R;
 import com.example.assignment.adapters.MyFragmentAdapter;
-import com.example.assignment.fragments.TestFragment;
 import com.example.assignment.repository.ContactsRipo;
 import com.example.assignment.viewmodel.ContactsListViewModel;
 import com.example.assignment.viewmodel.CreateEntryViewModel;
@@ -203,23 +196,8 @@ public class MainActivity extends AppCompatActivity {
                 }));
     }
 
-    @SuppressLint("ResourceType")
     public void loadFragment()
     {
-
-        // create a frame layout
-        FrameLayout fragmentLayout = new FrameLayout(this);
-        // set the layout params to fill the activity
-        fragmentLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        // set an id to the layout
-        fragmentLayout.setId(1000); // some positive integer
-        // set the layout as Activity content
-        setContentView(fragmentLayout);
-        // Finally , add the fragment
-        getSupportFragmentManager()
-                .beginTransaction()
-                .addToBackStack("test")
-                .replace(1000,new TestFragment()).commit();  // 1000 - is the id set for the container layout
 
     }
 

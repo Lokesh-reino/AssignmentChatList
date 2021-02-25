@@ -27,7 +27,6 @@ public abstract class AppDatabase extends RoomDatabase {
 //            database.execSQL("ALTER TABLE 'User table' ADD COLUMN 'column' TEXT NOT NULL DEFAULT''");
 //            database.execSQL("ALTER TABLE 'contact table' ADD COLUMN 'column' TEXT NOT NULL DEFAULT''");
 
-
         }
     };
 
